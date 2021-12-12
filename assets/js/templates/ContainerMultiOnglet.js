@@ -57,12 +57,25 @@ template.innerHTML = `
 
         flex-direction: column;
         flex-wrap: nowrap;
-        justify-content: center;
     }
 
-    img {
+    img.icone {
         width: 30px;
         height: 30px;
+    }
+
+    .img-visualisation-description {
+        padding: 1em;
+    }
+
+    img.img-vizualisation {
+    }
+
+    div.main-vizualiseuse {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
     }
 </style>
 
@@ -79,11 +92,24 @@ class ContainerMultiOnglet extends HTMLElement {
         super ();
 
         this.attachShadow ({mode: 'open'});
+        this.artsRubriques = [];
     }
 
     connectedCallback () {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
         this.shadowRoot.querySelector ("#navigation").style.backgroundColor = document.querySelector ("body").style.backgroundColor;
+        
+        // code pour la gallerie pgoto
+        // 1. créer une rubrique
+        let rubrique1 = this.addRubrique ("Vision Onirique", "Ceci est la description de la rubrique onirique");
+        this.addImageToRubrique (rubrique1, "Bae.png");
+        this.addImageToRubrique (rubrique1, "Bae.png");
+
+        let rubrique2 = this.addRubrique ("Rubrique 2", "Ceci est la description de la rubrique 2");
+        this.addImageToRubrique (rubrique2, "Bae.png");
+
+
+
 
         // pour ajouter un onglet :
         // this.addOnglet (mon-titre-onglet, fichier.html)
@@ -91,6 +117,7 @@ class ContainerMultiOnglet extends HTMLElement {
         this.addOnglet ("Formation and Competences", "diplome.svg", "education-eng.html");
         this.addOnglet ("Works", "book.png", "experiences-eng.html", true);
         this.addOnglet ("About me", "women.png", "aboutme-eng.html");
+
     }
 
     addOnglet (nomOnglet, svg, htmlFile, dft=false) {        
@@ -100,11 +127,21 @@ class ContainerMultiOnglet extends HTMLElement {
 
         let li = document.createElement ("li");
         li.classList.add ("li-nav");
-        let content = "";
+        let content = document.createElement ("div");
         this.importHTML (path + htmlFile, (data) => {
-            content = data;
+            content.innerHTML = data;
+            // imports des rubriques arts dans l'onglet experiences
+
+            if (content.querySelector ("#arts") !== null) {
+                this.artsRubriques.forEach (rubrique => {
+                    let mainContainer = document.createElement ("div");
+                    mainContainer.appendChild (rubrique);
+                    content.querySelector ("#arts").appendChild (mainContainer);
+                })
+            }
+
             if (dft) {
-                this.shadowRoot.querySelector ("#main-container").innerHTML = content;
+                this.shadowRoot.querySelector ("#main-container").innerHTML = content.innerHTML;
                 li.classList.add ("focused");
             }
         });
@@ -112,16 +149,48 @@ class ContainerMultiOnglet extends HTMLElement {
             this.shadowRoot.querySelectorAll ("li.focused").forEach (liClass => {
                 liClass.classList.remove ("focused")
             })
-            this.shadowRoot.querySelector ("#main-container").innerHTML = content;
+            this.shadowRoot.querySelector ("#main-container").innerHTML = content.innerHTML;
             li.classList.add ("focused");
         });
         li.innerHTML = nomOnglet;
 
         let image = document.createElement ("img");
+        image.classList.add ("icone")
         image.src = svgpath + svg;
         li.appendChild (image);
         li.prepend (image.cloneNode (true));
         ul.appendChild (li);
+    }
+
+    addRubrique (nom, description) {
+        let container = document.createElement ("div");
+        let title = document.createElement ("h3");
+        title.innerHTML = nom;
+
+        let descr = document.createElement ("div");
+        descr.classList.add ("img-visualisation-description");
+        descr.innerHTML = description;
+
+        let visualiseuse = document.createElement ("div");
+        visualiseuse.classList.add ("main-vizualiseuse");
+
+        container.appendChild (title);
+        container.appendChild (descr);
+        container.appendChild (visualiseuse);
+        this.artsRubriques.push (container);
+        return container;
+    }
+
+    addImageToRubrique (rubrique, image) {
+        let container = document.createElement ("div");
+        container.classList.add ("little-vizualiseuse");
+
+        let htmlImg = document.createElement ("img");
+        htmlImg.classList.add ("img-vizualisation");
+        htmlImg.src = "./assets/js/templates/pictures/artworks/" + image;
+        container.appendChild (htmlImg);
+
+        rubrique.querySelector (".main-vizualiseuse").appendChild (container);
     }
     
     importHTML (path, fxCallback) {
