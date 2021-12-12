@@ -6,7 +6,7 @@ template.innerHTML = `
     }
 
     nav#navigation {
-        background-color: rgb(40, 40, 40);
+        background-color: #373024;
     }
 
     #ul-navigation {
@@ -28,32 +28,41 @@ template.innerHTML = `
     }
 
     li.li-nav {
-        width: calc(20% - 20px);
-        border: outset 2px;
+        width: calc(25% - 20px);
         text-align: center;
         height: 60px;
         display: flex;
         align-content: center;
         align-items: center;
-        justify-content: center;
-        background-color: rgb(120, 120, 120);
+        justify-content: space-evenly;
+        background-color: #42392A;
+        cursor: pointer;
     }
 
     li.focused {
-        border-color: rgb(120,120,120);
         border-bottom: 0px;
-        background-color: rgb(80, 80, 80);
+        background-color:  #806843;
         height: 60px;
     }
 
     div#main-container {
-        background-color: rgb(80, 80, 80);
+        background-color: #806843;
         display: flex;
         height: calc(100vh - 60px);
         min-height: calc(100vh - 60px);
         overflow-y: auto;
-        padding-left: 1em;
-        padding-right: 1em;
+        padding-left: 10%;
+        padding-right: 10%;
+        font-size: 20px;
+
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+
+    img {
+        width: 30px;
+        height: 30px;
     }
 </style>
 
@@ -78,14 +87,15 @@ class ContainerMultiOnglet extends HTMLElement {
 
         // pour ajouter un onglet :
         // this.addOnglet (mon-titre-onglet, fichier.html)
-        this.addOnglet ("Objective", "objective-eng.html", true);
-        this.addOnglet ("Formation and Competences", "education-eng.html");
-        this.addOnglet ("Works", "experiences-eng.html");
-        this.addOnglet ("About me", "aboutme-eng.html");
+        this.addOnglet ("Home page", "star.png", "objective-eng.html");
+        this.addOnglet ("Formation and Competences", "diplome.svg", "education-eng.html");
+        this.addOnglet ("Works", "book.png", "experiences-eng.html", true);
+        this.addOnglet ("About me", "women.png", "aboutme-eng.html");
     }
 
-    addOnglet (nomOnglet, htmlFile, dft=false) {        
+    addOnglet (nomOnglet, svg, htmlFile, dft=false) {        
         const path = "./assets/js/templates/html/";
+        const svgpath = "./assets/js/templates/pictures/";
         let ul = this.shadowRoot.querySelector ("#ul-navigation");
 
         let li = document.createElement ("li");
@@ -106,6 +116,11 @@ class ContainerMultiOnglet extends HTMLElement {
             li.classList.add ("focused");
         });
         li.innerHTML = nomOnglet;
+
+        let image = document.createElement ("img");
+        image.src = svgpath + svg;
+        li.appendChild (image);
+        li.prepend (image.cloneNode (true));
         ul.appendChild (li);
     }
     
