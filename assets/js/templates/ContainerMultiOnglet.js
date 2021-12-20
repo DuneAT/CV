@@ -69,13 +69,15 @@ template.innerHTML = `
     }
 
     img.img-vizualisation {
+        max-width: 40vh;
+        max-height: 30vh;
     }
 
     div.main-vizualiseuse {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: space-around;
+        justify-content: flex-start;
     }
 </style>
 
@@ -99,23 +101,22 @@ class ContainerMultiOnglet extends HTMLElement {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
         this.shadowRoot.querySelector ("#navigation").style.backgroundColor = document.querySelector ("body").style.backgroundColor;
         
-        // code pour la gallerie pgoto
+        // code pour la gallerie photo
         // 1. créer une rubrique
         let rubrique1 = this.addRubrique ("Vision Onirique", "Ceci est la description de la rubrique onirique");
         this.addImageToRubrique (rubrique1, "Bae.png");
-        this.addImageToRubrique (rubrique1, "Bae.png");
 
-        let rubrique2 = this.addRubrique ("Rubrique 2", "Ceci est la description de la rubrique 2");
-        this.addImageToRubrique (rubrique2, "Bae.png");
+        let rubrique2 = this.addRubrique ("Inacceptable", "Ceci est la description de la rubrique inacceptable");
+        this.addImageToRubrique (rubrique2, "image0.png");
 
 
 
 
         // pour ajouter un onglet :
         // this.addOnglet (mon-titre-onglet, fichier.html)
-        this.addOnglet ("Home page", "star.png", "objective-eng.html");
+        this.addOnglet ("Home page", "star.png", "objective-eng.html", true);
         this.addOnglet ("Formation and Competences", "diplome.svg", "education-eng.html");
-        this.addOnglet ("Works", "book.png", "experiences-eng.html", true);
+        this.addOnglet ("Works", "book.png", "experiences-eng.html");
         this.addOnglet ("About me", "women.png", "aboutme-eng.html");
 
     }
@@ -165,7 +166,8 @@ class ContainerMultiOnglet extends HTMLElement {
     addRubrique (nom, description) {
         let container = document.createElement ("div");
         let title = document.createElement ("h3");
-        title.innerHTML = nom;
+        title.innerHTML = `<a href="./gallery.html" target="_blanck">${nom}</a>`;
+
 
         let descr = document.createElement ("div");
         descr.classList.add ("img-visualisation-description");
@@ -187,7 +189,7 @@ class ContainerMultiOnglet extends HTMLElement {
 
         let htmlImg = document.createElement ("img");
         htmlImg.classList.add ("img-vizualisation");
-        htmlImg.src = "./assets/js/templates/pictures/artworks/" + image;
+        htmlImg.src = "./assets/pictures/" + image;
         container.appendChild (htmlImg);
 
         rubrique.querySelector (".main-vizualiseuse").appendChild (container);
