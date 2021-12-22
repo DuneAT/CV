@@ -1,3 +1,5 @@
+import { getJsonImage } from "../scriptGallery.js";
+
 const template = document.createElement ("template");
 template.innerHTML = `
 <style>
@@ -66,11 +68,22 @@ class VisonneuseImage extends HTMLElement {
     connectedCallback () {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
 
+        let content = getJsonImage ()
+        console.log (content);
+
         // création d'une rubrique
-        let rubrique1 = this.addRubrique ("Onirique");
-        let rubrique2 = this.addRubrique ("Inacceptable");
-        this.addImageToRubrique (rubrique2, ["image0.png","image1.png","image2.png","image3.png","image4.png","image5.png","image6.png","image7.png","image8.png","image9.png","image10.png","image11.png","image12.png","image13.png","image14.png","image15.png","image16.png","image17.png","image18.png","image19.png","image20.png","image21.png","image22.png","image23.png","image24.png"]);
-        this.addImageToRubrique (rubrique1, "Bae.png")
+
+        Object.keys (content).forEach (value => {
+            let rubrique = this.addRubrique (value);
+
+            content[value].forEach (img => {
+                this.addImageToRubrique (rubrique, img.image, img.description)
+            })
+        })
+        // let rubrique1 = this.addRubrique ("Onirique");
+        // let rubrique2 = this.addRubrique ("Inacceptable");
+        // this.addImageToRubrique (rubrique2, ["image0.png","image1.png","image2.png","image3.png","image4.png","image5.png","image6.png","image7.png","image8.png","image9.png","image10.png","image11.png","image12.png","image13.png","image14.png","image15.png","image16.png","image17.png","image18.png","image19.png","image20.png","image21.png","image22.png","image23.png","image24.png"]);
+        // this.addImageToRubrique (rubrique1, "Bae.png")
     }
 
     addRubrique (rubrique) {
@@ -79,6 +92,7 @@ class VisonneuseImage extends HTMLElement {
             <div class="container-rubrique" id="${rubrique.replaceAll (" ", "-")}">
                 <div class="main-visualiseuse">
                     <img class="main-image-visualiseuse">
+                    <div class="main-image-description"></div>
                 </div>
                 <div class="container-vizualisation">
                 </div>
@@ -92,14 +106,7 @@ class VisonneuseImage extends HTMLElement {
         return rubrique;
     }
 
-    addImageToRubrique (rubrique, image) {
-        if (typeof image === "object") {
-            try {
-                image.forEach (img => this.addImageToRubrique (rubrique, img));
-                return;
-            } catch (err) { console.error (err)}
-        }
-
+    addImageToRubrique (rubrique, image, description) {
         const path = "./assets/pictures/";
         let htmlImg = document.createElement ("img");
         htmlImg.src = path + image;
@@ -107,11 +114,15 @@ class VisonneuseImage extends HTMLElement {
         htmlImg.addEventListener ("click", ev => {
             this.shadowRoot.querySelector ("#" + rubrique.replaceAll (" ", "-"))
                 .querySelector (".main-visualiseuse > img").src = path + image;
+            this.shadowRoot.querySelector ("#" + rubrique.replaceAll (" ", "-"))
+                .querySelector (".main-image-description").innerHTML = description;
         });
         if (this.shadowRoot.querySelector ("#" + rubrique.replaceAll (" ", "-"))
                             .querySelector (".main-visualiseuse > img").src === "") {
             this.shadowRoot.querySelector ("#" + rubrique.replaceAll (" ", "-"))
-            .querySelector (".main-visualiseuse > img").src = path + image;
+                .querySelector (".main-visualiseuse > img").src = path + image;
+            this.shadowRoot.querySelector ("#" + rubrique.replaceAll (" ", "-"))
+                .querySelector (".main-image-description").innerHTML = description;
         }
         this.shadowRoot.querySelector ("#" + rubrique.replaceAll (" ", "-"))
             .querySelector (".container-vizualisation").appendChild (htmlImg);
